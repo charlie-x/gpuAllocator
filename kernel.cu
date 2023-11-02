@@ -31,6 +31,38 @@ int main(int argc, char* argv[]) {
 
 	}
 
+	int gpuId = 0;
+	
+	// set the device index.
+	if (argc > 2) {
+		gpuId = atoi(argv[2]); 
+	}
+
+	// check the number of available GPUs
+	int numDevices;
+	cudaGetDeviceCount(&numDevices);
+
+	if (gpuId < 0 || gpuId >= numDevices) {
+		std::cerr << "Invalid GPU ID specified." << std::endl;
+		return 1;
+	}
+
+	// set the desired GPU
+	cudaSetDevice(gpuId);
+
+	// query device properties
+	cudaDeviceProp deviceProp;
+	cudaStatus = cudaGetDeviceProperties(&deviceProp, gpuId);
+	if (cudaStatus != cudaSuccess) {
+		std::cerr << "cudaGetDeviceProperties failed! Error: " << cudaGetErrorString(cudaStatus) << std::endl;
+		return 1;
+	}
+
+	std::cout << "Device Name: " << deviceProp.name << std::endl;
+	std::cout << "Total Global Memory: " << deviceProp.totalGlobalMem << " bytes" << std::endl;
+
+
+
 	memSize *= (1024ULL * 1024ULL);  // convert MB to bytes
 
 	// if memSize is 0, just show available VRAM and exit
